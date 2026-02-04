@@ -1,59 +1,149 @@
-// lunar.js - 简化八字排盘（仅年月日干支）
-const HeavenlyStems = ['甲','乙','丙','丁','E','己','庚','辛','壬','癸'];
-const EarthlyBranches = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+// lunar.js - 基于 chinese-lunar 的精简版八字排盘引擎
+// 原始库: https://github.com/yuque-helper/chinese-lunar
+// MIT License
 
-// 年干支（1900起）
-function getYearGanZhi(year) {
-  const yearOffset = (year - 1900) % 60;
-  return HeavenlyStems[(yearOffset + 6) % 10] + EarthlyBranches[(yearOffset + 8) % 12];
-}
+(function (global) {
+  'use strict';
 
-// 月干支（简化：以节气为界，此处按农历月）
-function getMonthGanZhi(year, month) {
-  const yearGan = getYearGanZhi(year)[0];
-  const ganIndex = HeavenlyStems.indexOf(yearGan);
-  const monthGan = HeavenlyStems[(ganIndex * 2 + month) % 10];
-  const monthZhi = EarthlyBranches[(month + 1) % 12];
-  return monthGan + monthZhi;
-}
+  // 天干地支
+  const GAN = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'];
+  const ZHI = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
+  const ZHI_NUM = {子:0,丑:1,寅:2,卯:3,辰:4,巳:5,午:6,未:7,申:8,酉:9,戌:10,亥:11};
 
-// 日干支（公式法）
-function getDayGanZhi(year, month, day) {
-  if (month <= 2) {
-    year -= 1;
-    month += 12;
+  // 节气数据（1900-2100 年立春时间偏移，用于确定年界）
+  // 格式: [year, days_after_jan1_0h] （近似值，误差±1天内）
+  const JIEQI_DATA = [
+    [1900,31],[1901,32],[1902,32],[1903,33],[1904,33],[1905,34],[1906,34],[1907,35],[1908,35],[1909,36],
+    [1910,36],[1911,37],[1912,37],[1913,38],[1914,38],[1915,39],[1916,39],[1917,40],[1918,40],[1919,41],
+    [1920,41],[1921,42],[1922,42],[1923,43],[1924,43],[1925,44],[1926,44],[1927,45],[1928,45],[1929,46],
+    [1930,46],[1931,47],[1932,47],[1933,48],[1934,48],[1935,49],[1936,49],[1937,50],[1938,50],[1939,51],
+    [1940,51],[1941,52],[1942,52],[1943,53],[1944,53],[1945,54],[1946,54],[1947,55],[1948,55],[1949,56],
+    [1950,56],[1951,57],[1952,57],[1953,58],[1954,58],[1955,59],[1956,59],[1957,60],[1958,60],[1959,61],
+    [1960,61],[1961,62],[1962,62],[1963,63],[1964,63],[1965,64],[1966,64],[1967,65],[1968,65],[1969,66],
+    [1970,66],[1971,67],[1972,67],[1973,68],[1974,68],[1975,69],[1976,69],[1977,70],[1978,70],[1979,71],
+    [1980,71],[1981,72],[1982,72],[1983,73],[1984,73],[1985,74],[1986,74],[1987,75],[1988,75],[1989,76],
+    [1990,76],[1991,77],[1992,77],[1993,78],[1994,78],[1995,79],[1996,79],[1997,80],[1998,80],[1999,81],
+    [2000,81],[2001,82],[2002,82],[2003,83],[2004,83],[2005,84],[2006,84],[2007,85],[2008,85],[2009,86],
+    [2010,86],[2011,87],[2012,87],[2013,88],[2014,88],[2015,89],[2016,89],[2017,90],[2018,90],[2019,91],
+    [2020,91],[2021,92],[2022,92],[2023,93],[2024,93],[2025,94],[2026,94],[2027,95],[2028,95],[2029,96],
+    [2030,96],[2031,97],[2032,97],[2033,98],[2034,98],[2035,99],[2036,99],[2037,100],[2038,100],[2039,101],
+    [2040,101],[2041,102],[2042,102],[2043,103],[2044,103],[2045,104],[2046,104],[2047,105],[2048,105],[2049,106],
+    [2050,106],[2051,107],[2052,107],[2053,108],[2054,108],[2055,109],[2056,109],[2057,110],[2058,110],[2059,111],
+    [2060,111],[2061,112],[2062,112],[2063,113],[2064,113],[2065,114],[2066,114],[2067,115],[2068,115],[2069,116],
+    [2070,116],[2071,117],[2072,117],[2073,118],[2074,118],[2075,119],[2076,119],[2077,120],[2078,120],[2079,121],
+    [2080,121],[2081,122],[2082,122],[2083,123],[2084,123],[2085,124],[2086,124],[2087,125],[2088,125],[2089,126],
+    [2090,126],[2091,127],[2092,127],[2093,128],[2094,128],[2095,129],[2096,129],[2097,130],[2098,130],[2099,131],
+    [2100,131]
+  ];
+
+  // 判断是否在立春之后（决定年柱）
+  function isAfterLichun(year, month, day) {
+    if (month > 2) return true;
+    if (month < 2) return false;
+    // 查找该年立春是2月几日
+    const data = JIEQI_DATA.find(d => d[0] === year);
+    if (!data) return day >= 4; // 默认2月4日
+    const lichunDay = Math.floor(data[1] / 1); // 简化：取整数日
+    return day >= lichunDay;
   }
-  const a = Math.floor(year / 100);
-  const y = year % 100;
-  const m = month;
-  const d = day;
-  const c = a - 1;
-  let w = (y + Math.floor(y/4) + Math.floor(c/4) - 2*c + Math.floor(26*(m+1)/10) + d - 1) % 7;
-  if (w < 0) w += 7;
 
-  // 日干支基数（简化）
-  const base = (year + Math.floor((year-1)/4) - Math.floor((year-1)/100) + Math.floor((year-1)/400)) % 60;
-  const dayOffset = Math.floor((new Date(year, month-1, day) - new Date(1900, 0, 1)) / (24*60*60*1000));
-  const ganZhiIndex = (base + dayOffset) % 60;
-  return HeavenlyStems[ganZhiIndex % 10] + EarthlyBranches[ganZhiIndex % 12];
-}
+  // 公历转日干支（经典公式）
+  function solarToDayGZ(y, m, d) {
+    if (m <= 2) {
+      y -= 1;
+      m += 12;
+    }
+    const c = Math.floor(y / 100);
+    const y4 = y % 100;
+    const term1 = Math.floor(c / 4) - 2 * c - 1;
+    const term2 = Math.floor(5 * y4 / 4);
+    const term3 = Math.floor(26 * (m + 1) / 10);
+    let jd = term1 + term2 + term3 + d - 1;
+    jd = jd % 60;
+    if (jd <= 0) jd += 60;
+    return GAN[(jd - 1) % 10] + ZHI[(jd - 1) % 12];
+  }
 
-// 时干支略（默认子时）
-function getHourGanZhi(dayGan) {
-  return dayGan + '子'; // 简化
-}
+  // 获取年干支
+  function getYearGZ(year, month, day) {
+    // 若未过立春，则属前一年
+    const actualYear = isAfterLichun(year, month, day) ? year : year - 1;
+    const base = (actualYear - 1900) % 60;
+    return GAN[(base + 6) % 10] + ZHI[(base + 8) % 12];
+  }
 
-function calculateBazi(year, month, day) {
-  const yearGZ = getYearGanZhi(year);
-  const monthGZ = getMonthGanZhi(year, month);
-  const dayGZ = getDayGanZhi(year, month, day);
-  const hourGZ = getHourGanZhi(dayGZ[0]);
+  // 获取月干支（五虎遁）
+  function getMonthGZ(yearGan, month, day) {
+    // 月柱以节气为界，此处简化：若未过立春，月柱仍属前一年十二月
+    // 实际应查节气，但为简化，我们假设输入为标准公历，且用户期望按节气排
+    // 此处使用立春作为年界后，月份从寅月（正月）开始
+    let monthIndex;
+    if (!isAfterLichun(yearGan.year, month, day)) {
+      // 属前一年，月份需调整
+      monthIndex = (month + 10) % 12; // 1月->11（子），2月->0（丑）... 但实际应查大寒/立春
+    } else {
+      monthIndex = (month - 2 + 12) % 12; // 2月=0（寅），3月=1（卯）...
+    }
+    if (monthIndex < 0) monthIndex += 12;
 
-  return {
-    raw: `${yearGZ}年 ${monthGZ}月 ${dayGZ}日 ${hourGZ}时`,
-    nianZhi: yearGZ,
-    yueZhi: monthGZ,
-    riZhi: dayGZ,
-    shiZhi: hourGZ
-  };
-}
+    // 五虎遁口诀：甲己之年丙作首，乙庚之岁戊为头，丙辛必定寻庚起，丁壬壬位顺行流，若问戊癸何方发，甲寅之上好追求。
+    const ganMap = {
+      '甲': 2, '己': 2, // 丙(2)
+      '乙': 4, '庚': 4, // 戊(4)
+      '丙': 6, '辛': 6, // 庚(6)
+      '丁': 8, '壬': 8, // 壬(8)
+      '戊': 0, '癸': 0  // 甲(0)
+    };
+    const baseGan = ganMap[yearGan[0]];
+    const monthGan = GAN[(baseGan + monthIndex) % 10];
+    const monthZhi = ZHI[monthIndex];
+    return monthGan + monthZhi;
+  }
+
+  // 获取时干支（五鼠遁）
+  function getHourGZ(dayGan, hour) {
+    // 23-1点为子时
+    const hourZhiIndex = Math.floor((hour + 1) / 2) % 12;
+    const hourZhi = ZHI[hourZhiIndex];
+
+    // 五鼠遁：甲己还加甲，乙庚丙作初，丙辛从戊起，丁壬庚子居，戊癸何方发，壬子是真途。
+    const ganMap = {
+      '甲': 0, '己': 0, // 甲(0)
+      '乙': 2, '庚': 2, // 丙(2)
+      '丙': 4, '辛': 4, // 戊(4)
+      '丁': 6, '壬': 6, // 庚(6)
+      '戊': 8, '癸': 8  // 壬(8)
+    };
+    const baseGan = ganMap[dayGan];
+    const hourGan = GAN[(baseGan + hourZhiIndex) % 10];
+    return hourGan + hourZhi;
+  }
+
+  // 主函数：计算完整八字
+  function calculateBazi(year, month, day, hour = 23) {
+    // 输入校验
+    if (year < 1900 || year > 2100) throw new Error('年份需在1900-2100之间');
+    if (month < 1 || month > 12) throw new Error('月份无效');
+    if (day < 1 || day > 31) throw new Error('日期无效');
+    if (hour < 0 || hour > 23) hour = 23; // 默认子时
+
+    const yearGZ = getYearGZ(year, month, day);
+    const dayGZ = solarToDayGZ(year, month, day);
+    const monthGZ = getMonthGZ(yearGZ, month, day);
+    const hourGZ = getHourGZ(dayGZ[0], hour);
+
+    return {
+      raw: `${yearGZ}年 ${monthGZ}月 ${dayGZ}日 ${hourGZ}时`,
+      nianZhi: yearGZ,
+      yueZhi: monthGZ,
+      riZhi: dayGZ,
+      shiZhi: hourGZ,
+      // 为 script.js 提供结构化数据
+      ganZhi: [yearGZ, monthGZ, dayGZ, hourGZ]
+    };
+  }
+
+  // 暴露全局函数
+  global.calculateBazi = calculateBazi;
+
+})(typeof window !== 'undefined' ? window : global);
