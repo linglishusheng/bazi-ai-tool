@@ -3,250 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>八字AI分析工具 - 免费在线算命</title>
-    <meta name="description" content="免费八字AI分析工具，输入出生时间，获取专业的八字分析和AI智能解读">
-    <meta name="keywords" content="八字,算命,AI分析,免费,在线工具,四柱八字">
-    <meta name="author" content="八字AI分析工具">
-    
-    <!-- 引入样式 -->
+    <title>八字分析平台</title>
     <link rel="stylesheet" href="style.css">
-    
-    <!-- 引入字体图标 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- 网站图标 -->
-    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔮</text></svg>">
-    
-    <!-- 引入开源八字计算库 -->
-    <script src="https://unpkg.com/chinese-lunar@0.1.4/build/chinese-lunar.js"></script>
 </head>
 <body>
-    <!-- 导航栏 -->
-    <header class="header">
-        <div class="container">
-            <nav class="navbar">
-                <div class="nav-brand">
-                    <i class="fas fa-star-and-crescent"></i>
-                    <h1>八字AI分析工具</h1>
+    <div class="container">
+        <header>
+            <h1>八字分析平台</h1>
+            <p>基于传统八字理论与现代人生规划的结合分析</p>
+        </header>
+        
+        <section class="input-section">
+            <h2>输入您的出生信息</h2>
+            <div class="input-group">
+                <label for="birthYear">出生年份：</label>
+                <input type="number" id="birthYear" min="1900" max="2100" value="1990">
+                
+                <label for="birthMonth">出生月份：</label>
+                <input type="number" id="birthMonth" min="1" max="12" value="1">
+                
+                <label for="birthDay">出生日期：</label>
+                <input type="number" id="birthDay" min="1" max="31" value="1">
+                
+                <label for="birthHour">出生时辰：</label>
+                <select id="birthHour">
+                    <option value="0">子时 (23:00-01:00)</option>
+                    <option value="1">丑时 (01:00-03:00)</option>
+                    <option value="2">寅时 (03:00-05:00)</option>
+                    <option value="3">卯时 (05:00-07:00)</option>
+                    <option value="4">辰时 (07:00-09:00)</option>
+                    <option value="5">巳时 (09:00-11:00)</option>
+                    <option value="6">午时 (11:00-13:00)</option>
+                    <option value="7">未时 (13:00-15:00)</option>
+                    <option value="8">申时 (15:00-17:00)</option>
+                    <option value="9">酉时 (17:00-19:00)</option>
+                    <option value="10">戌时 (19:00-21:00)</option>
+                    <option value="11">亥时 (21:00-23:00)</option>
+                </select>
+                
+                <label for="isLunar">是否为农历：</label>
+                <input type="checkbox" id="isLunar">
+                
+                <button id="analyzeBtn">开始分析</button>
+            </div>
+        </section>
+        
+        <section class="result-section" id="resultSection" style="display: none;">
+            <h2>分析结果</h2>
+            <div class="result-content">
+                <div class="bazi-info">
+                    <h3>八字信息</h3>
+                    <div id="baziDisplay"></div>
                 </div>
-                <div class="nav-links">
-                    <a href="#" class="nav-link active"><i class="fas fa-home"></i> 首页</a>
-                    <a href="#" class="nav-link"><i class="fas fa-info-circle"></i> 关于</a>
-                    <a href="#" class="nav-link"><i class="fas fa-question-circle"></i> 帮助</a>
+                
+                <div class="analysis-result">
+                    <h3>第一部分：出生时间规律的传统分析方法</h3>
+                    <div id="traditionalAnalysis"></div>
+                    
+                    <h3>第二部分：现代人生规划解读</h3>
+                    <div id="modernAnalysis"></div>
                 </div>
-            </nav>
-        </div>
-    </header>
+            </div>
+        </section>
+        
+        <footer>
+            <h3>重要声明</h3>
+            <p>1. 本工具仅供娱乐参考，不构成专业建议</p>
+            <p>2. 命运掌握在自己手中，请理性看待分析结果</p>
+            <p>3. 计算结果基于传统八字理论，不保证100%准确</p>
+            <p>4. 请勿用于商业决策、医疗诊断等重要事项</p>
+            <p>5. 专业大师进一步交流+VX:linglishusheng</p>
+        </footer>
+    </div>
 
-    <!-- 主内容区域 -->
-    <main class="main">
-        <div class="container">
-            <!-- 欢迎区域 -->
-            <section class="hero">
-                <div class="hero-content">
-                    <h2 class="hero-title">
-                        <i class="fas fa-magic"></i> 免费八字AI分析工具
-                    </h2>
-                    <p class="hero-subtitle">
-                        输入出生时间，获取专业的八字分析和AI智能解读
-                    </p>
-                    <div class="features">
-                        <div class="feature-item">
-                            <i class="fas fa-lock"></i>
-                            <span>隐私安全</span>
-                        </div>
-                        <div class="feature-item">
-                            <i class="fas fa-bolt"></i>
-                            <span>快速计算</span>
-                        </div>
-                        <div class="feature-item">
-                            <i class="fas fa-robot"></i>
-                            <span>AI分析</span>
-                        </div>
-                        <div class="feature-item">
-                            <i class="fas fa-hand-holding-heart"></i>
-                            <span>完全免费</span>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 输入区域 -->
-            <section class="card input-card">
-                <div class="card-header">
-                    <h3><i class="fas fa-user-edit"></i> 第一步：输入出生信息</h3>
-                    <p>请准确填写您的出生时间，以获得精确的八字分析</p>
-                </div>
-                <div class="card-body">
-                    <div class="form-grid">
-                        <!-- 出生日期 -->
-                        <div class="form-group">
-                            <label for="birthdate" class="form-label">
-                                <i class="fas fa-calendar-day"></i> 公历生日
-                            </label>
-                            <input type="date" id="birthdate" class="form-input" value="1990-01-01">
-                            <small class="form-hint">请选择您的出生日期</small>
-                        </div>
-
-                        <!-- 出生时辰 -->
-                        <div class="form-group">
-                            <label for="birthtime" class="form-label">
-                                <i class="fas fa-clock"></i> 出生时辰
-                            </label>
-                            <select id="birthtime" class="form-input">
-                                <option value="0">子时 (23:00-00:59)</option>
-                                <option value="1">丑时 (01:00-02:59)</option>
-                                <option value="2">寅时 (03:00-04:59)</option>
-                                <option value="3">卯时 (05:00-06:59)</option>
-                                <option value="4">辰时 (07:00-08:59)</option>
-                                <option value="5">巳时 (09:00-10:59)</option>
-                                <option value="6">午时 (11:00-12:59)</option>
-                                <option value="7">未时 (13:00-14:59)</option>
-                                <option value="8">申时 (15:00-16:59)</option>
-                                <option value="9">酉时 (17:00-18:59)</option>
-                                <option value="10">戌时 (19:00-20:59)</option>
-                                <option value="11">亥时 (21:00-22:59)</option>
-                            </select>
-                            <small class="form-hint">请选择最接近的时辰</small>
-                        </div>
-
-                        <!-- 性别 -->
-                        <div class="form-group">
-                            <label class="form-label">
-                                <i class="fas fa-venus-mars"></i> 性别
-                            </label>
-                            <div class="gender-select">
-                                <label class="radio-label">
-                                    <input type="radio" name="gender" value="male" checked>
-                                    <span class="radio-custom"></span>
-                                    <span class="radio-text">男</span>
-                                </label>
-                                <label class="radio-label">
-                                    <input type="radio" name="gender" value="female">
-                                    <span class="radio-custom"></span>
-                                    <span class="radio-text">女</span>
-                                </label>
-                            </div>
-                            <small class="form-hint">性别影响大运排盘</small>
-                        </div>
-                    </div>
-
-                    <button id="calculateBtn" class="btn btn-primary btn-large">
-                        <i class="fas fa-calculator"></i> 计算八字
-                    </button>
-                </div>
-            </section>
-
-            <!-- 结果展示区域 -->
-            <section id="resultSection" class="card result-card" style="display: none;">
-                <div class="card-header">
-                    <h3><i class="fas fa-chart-bar"></i> 第二步：八字分析结果</h3>
-                    <p>您的四柱八字和基本信息</p>
-                </div>
-                <div class="card-body">
-                    <!-- 四柱八字显示 -->
-                    <div class="bazi-display">
-                        <div class="bazi-row">
-                            <div class="bazi-column">
-                                <div class="bazi-label">年柱</div>
-                                <div class="bazi-value" id="yearZhu">-</div>
-                                <div class="bazi-element" id="yearElement">-</div>
-                            </div>
-                            <div class="bazi-column">
-                                <div class="bazi-label">月柱</div>
-                                <div class="bazi-value" id="monthZhu">-</div>
-                                <div class="bazi-element" id="monthElement">-</div>
-                            </div>
-                            <div class="bazi-column">
-                                <div class="bazi-label">日柱</div>
-                                <div class="bazi-value" id="dayZhu">-</div>
-                                <div class="bazi-element" id="dayElement">-</div>
-                            </div>
-                            <div class="bazi-column">
-                                <div class="bazi-label">时柱</div>
-                                <div class="bazi-value" id="hourZhu">-</div>
-                                <div class="bazi-element" id="hourElement">-</div>
-                            </div>
-                        </div>
-                        
-                        <!-- 详细信息 -->
-                        <div class="bazi-details">
-                            <div class="detail-item">
-                                <span class="detail-label">八字：</span>
-                                <span id="fullBazi" class="detail-value">-</span>
-                            </div>
-                            <div class="detail-item">
-                                <span class="detail-label">生肖：</span>
-                                <span id="shengxiao" class="detail-value">-</span>
-                            </div>
-                            <div class="detail-item">
-                                <span class="detail-label">命主：</span>
-                                <span id="mingzhu" class="detail-value">-</span>
-                            </div>
-                            <div class="detail-item">
-                                <span class="detail-label">五行：</span>
-                                <span id="wuxing" class="detail-value">-</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 五行能量图 -->
-                    <div class="wuxing-chart">
-                        <h4><i class="fas fa-chart-pie"></i> 五行能量分布</h4>
-                        <div class="chart-container">
-                            <div class="chart-item">
-                                <div class="chart-label">木</div>
-                                <div class="chart-bar">
-                                    <div class="bar-fill" id="woodBar" style="width: 0%"></div>
-                                </div>
-                                <div class="chart-value" id="woodValue">0%</div>
-                            </div>
-                            <div class="chart-item">
-                                <div class="chart-label">火</div>
-                                <div class="chart-bar">
-                                    <div class="bar-fill" id="fireBar" style="width: 0%"></div>
-                                </div>
-                                <div class="chart-value" id="fireValue">0%</div>
-                            </div>
-                            <div class="chart-item">
-                                <div class="chart-label">土</div>
-                                <div class="chart-bar">
-                                    <div class="bar-fill" id="earthBar" style="width: 0%"></div>
-                                </div>
-                                <div class="chart-value" id="earthValue">0%</div>
-                            </div>
-                            <div class="chart-item">
-                                <div class="chart-label">金</div>
-                                <div class="chart-bar">
-                                    <div class="bar-fill" id="metalBar" style="width: 0%"></div>
-                                </div>
-                                <div class="chart-value" id="metalValue">0%</div>
-                            </div>
-                            <div class="chart-item">
-                                <div class="chart-label">水</div>
-                                <div class="chart-bar">
-                                    <div class="bar-fill" id="waterBar" style="width: 0%"></div>
-                                </div>
-                                <div class="chart-value" id="waterValue">0%</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- AI分析区域 -->
-            <section class="card ai-card">
-                <div class="card-header">
-                    <h3><i class="fas fa-robot"></i> 第三步：AI智能分析</h3>
-                    <p>输入您关心的问题，获取AI的深度解读</p>
-                </div>
-                <div class="card-body">
-                    <!-- 问题输入 -->
-                    <div class="question-input">
-                        <label for="question" class="form-label">
-                            <i class="fas fa-question-circle"></i> 请输入您的问题
-                        </label>
-                        <textarea id="question" class="form-textarea" 
-                                  placeholder="例如：我的事业运势如何？什么时候有好的发展机会？感情婚姻需要注意什么？..." 
-                                  rows="4"></textarea>
-                        <small class
+    <script src="lunar.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
