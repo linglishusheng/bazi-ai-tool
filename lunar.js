@@ -1,260 +1,172 @@
 /**
- * 简易八字计算库
- * 基于公历日期计算八字
+ * 增强版八字计算库
+ * 基于lunar-javascript的完整八字分析
  */
 
-// 天干
-const TianGan = ["甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸"];
-// 地支
-const DiZhi = ["子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥"];
-// 生肖
-const ShengXiao = ["鼠", "牛", "虎", "兔", "龙", "蛇", "马", "羊", "猴", "鸡", "狗", "猪"];
-// 五行
-const WuXing = ["木", "木", "火", "火", "土", "土", "金", "金", "水", "水"];
-// 月支对应表
-const MonthZhi = ["寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥", "子", "丑"];
-
-class LunarCalculator {
+class AdvancedBaziCalculator {
     constructor() {
-        this.rules = this.loadRules();
+        this.ShiShenMap = this.initShiShenMap();
+        this.WuXingEnergy = this.initWuXingEnergy();
     }
     
-    // 计算年柱
-    calculateYearGanZhi(year) {
-        // 简化计算：以立春为界
-        const ganIndex = (year - 4) % 10;
-        const zhiIndex = (year - 4) % 12;
-        return TianGan[ganIndex] + DiZhi[zhiIndex];
-    }
-    
-    // 计算月柱
-    calculateMonthGanZhi(year, month) {
-        // 月支固定
-        const zhi = MonthZhi[month - 1];
-        
-        // 年干对应月干（五虎遁）
-        const yearGan = (year - 4) % 10;
-        const monthGanTable = [
-            ["丙", "丁", "戊", "己", "庚", "辛", "壬", "癸", "甲", "乙", "丙", "丁"], // 甲己年
-            ["戊", "己", "庚", "辛", "壬", "癸", "甲", "乙", "丙", "丁", "戊", "己"], // 乙庚年
-            ["庚", "辛", "壬", "癸", "甲", "乙", "丙", "丁", "戊", "己", "庚", "辛"], // 丙辛年
-            ["壬", "癸", "甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸"], // 丁壬年
-            ["甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸", "甲", "乙"]  // 戊癸年
-        ];
-        
-        const tableIndex = yearGan % 5;
-        const gan = monthGanTable[tableIndex][month - 1];
-        
-        return gan + zhi;
-    }
-    
-    // 计算日柱（简化版）
-    calculateDayGanZhi(year, month, day) {
-        // 这里使用简化公式，实际应该用更精确的算法
-        // 注意：这是简化版本，精确计算需要完整公式
-        const baseYear = 1900;
-        const baseGanZhi = "甲子";
-        
-        const days = Math.floor((Date.UTC(year, month - 1, day) - Date.UTC(baseYear, 0, 31)) / 86400000);
-        const ganIndex = days % 10;
-        const zhiIndex = days % 12;
-        
-        return TianGan[ganIndex] + DiZhi[zhiIndex];
-    }
-    
-    // 计算时柱
-    calculateHourGanZhi(dayGan, hour) {
-        const hourZhi = DiZhi[hour];
-        
-        // 日上起时（五鼠遁）
-        const dayGanIndex = TianGan.indexOf(dayGan.charAt(0));
-        const hourGanTable = [
-            ["甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸", "甲", "乙"], // 甲己日
-            ["丙", "丁", "戊", "己", "庚", "辛", "壬", "癸", "甲", "乙", "丙", "丁"], // 乙庚日
-            ["戊", "己", "庚", "辛", "壬", "癸", "甲", "乙", "丙", "丁", "戊", "己"], // 丙辛日
-            ["庚", "辛", "壬", "癸", "甲", "乙", "丙", "丁", "戊", "己", "庚", "辛"], // 丁壬日
-            ["壬", "癸", "甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸"]  // 戊癸日
-        ];
-        
-        const tableIndex = dayGanIndex % 5;
-        const hourGan = hourGanTable[tableIndex][hour];
-        
-        return hourGan + hourZhi;
-    }
-    
-    // 计算五行
-    calculateWuXing(ganZhi) {
-        const gan = ganZhi.charAt(0);
-        const zhi = ganZhi.charAt(1);
-        
-        const ganIndex = TianGan.indexOf(gan);
-        const ganWuXing = WuXing[ganIndex];
-        
-        // 地支五行简化
-        const zhiWuXingMap = {
-            "子": "水", "亥": "水",
-            "寅": "木", "卯": "木",
-            "巳": "火", "午": "火",
-            "申": "金", "酉": "金",
-            "辰": "土", "戌": "土", "丑": "土", "未": "土"
-        };
-        
-        const zhiWuXing = zhiWuXingMap[zhi] || "土";
-        
+    // 初始化十神映射表
+    initShiShenMap() {
         return {
-            gan: ganWuXing,
-            zhi: zhiWuXing,
-            combination: `${ganWuXing}${zhiWuXing}`
+            // 日干与其他天干的关系
+            '甲': { '甲': '比肩', '乙': '劫财', '丙': '食神', '丁': '伤官', '戊': '偏财', '己': '正财', '庚': '七杀', '辛': '正官', '壬': '偏印', '癸': '正印' },
+            '乙': { '甲': '劫财', '乙': '比肩', '丙': '伤官', '丁': '食神', '戊': '正财', '己': '偏财', '庚': '正官', '辛': '七杀', '壬': '正印', '癸': '偏印' },
+            '丙': { '甲': '偏印', '乙': '正印', '丙': '比肩', '丁': '劫财', '戊': '食神', '己': '伤官', '庚': '偏财', '辛': '正财', '壬': '七杀', '癸': '正官' },
+            '丁': { '甲': '正印', '乙': '偏印', '丙': '劫财', '丁': '比肩', '戊': '伤官', '己': '食神', '庚': '正财', '辛': '偏财', '壬': '正官', '癸': '七杀' },
+            '戊': { '甲': '七杀', '乙': '正官', '丙': '偏印', '丁': '正印', '戊': '比肩', '己': '劫财', '庚': '食神', '辛': '伤官', '壬': '偏财', '癸': '正财' },
+            '己': { '甲': '正官', '乙': '七杀', '丙': '正印', '丁': '偏印', '戊': '劫财', '己': '比肩', '庚': '伤官', '辛': '食神', '壬': '正财', '癸': '偏财' },
+            '庚': { '甲': '偏财', '乙': '正财', '丙': '七杀', '丁': '正官', '戊': '偏印', '己': '正印', '庚': '比肩', '辛': '劫财', '壬': '食神', '癸': '伤官' },
+            '辛': { '甲': '正财', '乙': '偏财', '丙': '正官', '丁': '七杀', '戊': '正印', '己': '偏印', '庚': '劫财', '辛': '比肩', '壬': '伤官', '癸': '食神' },
+            '壬': { '甲': '食神', '乙': '伤官', '丙': '偏财', '丁': '正财', '戊': '七杀', '己': '正官', '庚': '偏印', '辛': '正印', '壬': '比肩', '癸': '劫财' },
+            '癸': { '甲': '伤官', '乙': '食神', '丙': '正财', '丁': '偏财', '戊': '正官', '己': '七杀', '庚': '正印', '辛': '偏印', '壬': '劫财', '癸': '比肩' }
         };
     }
     
-    // 计算生肖
-    calculateShengXiao(year) {
-        const index = (year - 4) % 12;
-        return ShengXiao[index];
-    }
-    
-    // 命主（日柱天干）
-    getMingZhu(dayGanZhi) {
-        const gan = dayGanZhi.charAt(0);
-        const mingZhuMap = {
-            "甲": "甲木", "乙": "乙木", "丙": "丙火", "丁": "丁火",
-            "戊": "戊土", "己": "己土", "庚": "庚金", "辛": "辛金",
-            "壬": "壬水", "癸": "癸水"
-        };
-        return mingZhuMap[gan] || "未知";
-    }
-    
-    // 加载规则库
-    loadRules() {
+    // 初始化五行能量计算
+    initWuXingEnergy() {
         return {
-            // 年柱解释
-            "甲子": "海中金，聪明好学，智勇双全",
-            "乙丑": "海中金，温和诚实，勤奋努力",
-            "丙寅": "炉中火，热情开朗，积极向上",
-            "丁卯": "炉中火，温和体贴，富有同情心",
-            "戊辰": "大林木，诚实稳重，有责任感",
-            "己巳": "大林木，聪明灵活，适应力强",
-            "庚午": "路旁土，正直果断，有领导力",
-            "辛未": "路旁土，细致谨慎，追求完美",
-            "壬申": "剑锋金，聪明机智，善于变通",
-            "癸酉": "剑锋金，敏感细腻，艺术天赋",
-            "甲戌": "山头火，独立自主，有创造力",
-            "乙亥": "山头火，温和善良，人缘好",
-            "丙子": "涧下水，聪明机敏，适应力强",
-            "丁丑": "涧下水，踏实稳重，有耐心",
-            "戊寅": "城头土，诚实可靠，有担当",
-            "己卯": "城头土，温和体贴，善解人意",
-            "庚辰": "白蜡金，正直果断，执行力强",
-            "辛巳": "白蜡金，聪明细致，追求完美",
-            "壬午": "杨柳木，灵活变通，适应力强",
-            "癸未": "杨柳木，温和善良，有同情心",
-            "甲申": "泉中水，聪明好学，智勇双全",
-            "乙酉": "泉中水，温和诚实，勤奋努力",
-            "丙戌": "屋上土，热情开朗，积极向上",
-            "丁亥": "屋上土，温和体贴，富有同情心",
-            "戊子": "霹雳火，诚实稳重，有责任感",
-            "己丑": "霹雳火，聪明灵活，适应力强",
-            "庚寅": "松柏木，正直果断，有领导力",
-            "辛卯": "松柏木，细致谨慎，追求完美",
-            "壬辰": "长流水，聪明机智，善于变通",
-            "癸巳": "长流水，敏感细腻，艺术天赋",
-            "甲午": "砂石金，独立自主，有创造力",
-            "乙未": "砂石金，温和善良，人缘好",
-            "丙申": "山下火，聪明机敏，适应力强",
-            "丁酉": "山下火，踏实稳重，有耐心",
-            "戊戌": "平地木，诚实可靠，有担当",
-            "己亥": "平地木，温和体贴，善解人意",
-            "庚子": "壁上土，正直果断，执行力强",
-            "辛丑": "壁上土，聪明细致，追求完美",
-            "壬寅": "金箔金，灵活变通，适应力强",
-            "癸卯": "金箔金，温和善良，有同情心",
-            "甲辰": "佛灯火，聪明好学，智勇双全",
-            "乙巳": "佛灯火，温和诚实，勤奋努力",
-            "丙午": "天河水，热情开朗，积极向上",
-            "丁未": "天河水，温和体贴，富有同情心",
-            "戊申": "大驿土，诚实稳重，有责任感",
-            "己酉": "大驿土，聪明灵活，适应力强",
-            "庚戌": "钗钏金，正直果断，有领导力",
-            "辛亥": "钗钏金，细致谨慎，追求完美",
-            "壬子": "桑柘木，聪明机智，善于变通",
-            "癸丑": "桑柘木，敏感细腻，艺术天赋",
-            "甲寅": "大溪水，独立自主，有创造力",
-            "乙卯": "大溪水，温和善良，人缘好",
-            "丙辰": "沙中土，聪明机敏，适应力强",
-            "丁巳": "沙中土，踏实稳重，有耐心",
-            "戊午": "天上火，诚实可靠，有担当",
-            "己未": "天上火，温和体贴，善解人意",
-            "庚申": "石榴木，正直果断，执行力强",
-            "辛酉": "石榴木，聪明细致，追求完美",
-            "壬戌": "大海水，灵活变通，适应力强",
-            "癸亥": "大海水，温和善良，有同情心"
+            '甲': {'木': 2}, '乙': {'木': 2}, '丙': {'火': 2}, '丁': {'火': 2},
+            '戊': {'土': 2}, '己': {'土': 2}, '庚': {'金': 2}, '辛': {'金': 2},
+            '壬': {'水': 2}, '癸': {'水': 2},
+            '寅': {'木': 2, '火': 1}, '卯': {'木': 3}, '辰': {'土': 2, '木': 1},
+            '巳': {'火': 2, '金': 1}, '午': {'火': 3}, '未': {'土': 2, '火': 1},
+            '申': {'金': 2, '水': 1}, '酉': {'金': 3}, '戌': {'土': 2, '金': 1},
+            '亥': {'水': 2, '木': 1}, '子': {'水': 3}, '丑': {'土': 2, '水': 1}
         };
     }
     
-    // 获取解释
-    getInterpretation(ganZhi) {
-        return this.rules[ganZhi] || "（暂无详细解释）";
+    // 计算完整八字信息
+    calculateCompleteBazi(solarDate, hour, gender) {
+        try {
+            const solar = Solar.fromYmd(
+                solarDate.getFullYear(),
+                solarDate.getMonth() + 1,
+                solarDate.getDate()
+            );
+            const lunar = solar.getLunar();
+            
+            // 计算四柱
+            const bazi = {
+                year: lunar.getYearInGanZhi(),
+                month: lunar.getMonthInGanZhi(),
+                day: lunar.getDayInGanZhi(),
+                hour: lunar.getTimeInGanZhi(hour)
+            };
+            
+            // 计算十神
+            const shishen = this.calculateShiShen(bazi);
+            
+            // 计算五行能量
+            const wuxing = this.calculateWuXing(bazi);
+            
+            // 判断日主旺衰
+            const strength = this.judgeStrength(bazi, wuxing);
+            
+            // 计算特殊格局
+            const patterns = this.analyzePatterns(bazi, shishen, strength);
+            
+            // 统计十神数量
+            const shishenCount = this.countShiShen(shishen);
+            
+            return {
+                ...bazi,
+                shengxiao: lunar.getYearShengXiao(),
+                strength: strength,
+                shishen: shishen,
+                shishenCount: shishenCount,
+                wuxing: wuxing,
+                patterns: patterns,
+                gender: gender,
+                lunarYear: lunar.getYear(),
+                analysis: this.generateBasicAnalysis(bazi, shishen, strength, patterns)
+            };
+            
+        } catch (error) {
+            console.error('八字计算错误:', error);
+            throw new Error('八字计算失败，请检查输入参数');
+        }
     }
     
-    // 综合分析
-    comprehensiveAnalysis(bazi, gender) {
-        const { year, month, day, hour } = bazi;
+    // 计算十神
+    calculateShiShen(bazi) {
+        const dayGan = bazi.day.charAt(0); // 日干
+        const shishen = {};
         
-        // 这里可以添加更复杂的分析逻辑
-        let analysis = `您的八字为：${year} ${month} ${day} ${hour}\n\n`;
+        // 年柱十神
+        shishen.year = this.getShiShen(dayGan, bazi.year.charAt(0));
         
-        // 年柱分析
-        analysis += `年柱${year}：${this.getInterpretation(year)}\n`;
+        // 月柱十神
+        shishen.month = this.getShiShen(dayGan, bazi.month.charAt(0));
         
-        // 月柱分析
-        analysis += `月柱${month}：${this.getInterpretation(month)}\n`;
+        // 日柱十神（日支）
+        shishen.day = this.getShiShen(dayGan, bazi.day.charAt(1));
         
-        // 日柱分析
-        analysis += `日柱${day}：${this.getInterpretation(day)}\n`;
+        // 时柱十神
+        shishen.hour = this.getShiShen(dayGan, bazi.hour.charAt(0));
         
-        // 时柱分析
-        analysis += `时柱${hour}：${this.getInterpretation(hour)}\n\n`;
-        
-        // 五行分析
-        const wuxingYear = this.calculateWuXing(year);
-        const wuxingMonth = this.calculateWuXing(month);
-        const wuxingDay = this.calculateWuXing(day);
-        const wuxingHour = this.calculateWuXing(hour);
-        
-        analysis += `五行分析：\n`;
-        analysis += `年柱五行：${wuxingYear.combination}\n`;
-        analysis += `月柱五行：${wuxingMonth.combination}\n`;
-        analysis += `日柱五行：${wuxingDay.combination}\n`;
-        analysis += `时柱五行：${wuxingHour.combination}\n\n`;
-        
-        // 简单性格分析
-        const dayGan = day.charAt(0);
-        const personalityMap = {
-            "甲": "有领导才能，积极进取，但可能过于刚强",
-            "乙": "温和体贴，适应力强，但可能缺乏主见",
-            "丙": "热情开朗，乐于助人，但可能急躁冲动",
-            "丁": "温和细腻，富有同情心，但可能多愁善感",
-            "戊": "诚实稳重，有责任感，但可能过于固执",
-            "己": "温和谨慎，适应力强，但可能缺乏自信",
-            "庚": "正直果断，执行力强，但可能过于严厉",
-            "辛": "聪明细致，追求完美，但可能过于挑剔",
-            "壬": "聪明机智，善于变通，但可能缺乏恒心",
-            "癸": "敏感细腻，有艺术天赋，但可能过于敏感"
-        };
-        
-        analysis += `性格特点：${personalityMap[dayGan] || "需要结合八字综合分析"}\n\n`;
-        
-        // 建议
-        analysis += `建议：\n`;
-        analysis += `1. 发挥自身优势，弥补不足之处\n`;
-        analysis += `2. 保持积极心态，把握人生机遇\n`;
-        analysis += `3. 注意身体健康，平衡工作生活\n`;
-        analysis += `4. 多交良师益友，共同进步成长`;
-        
-        return analysis;
+        return shishen;
     }
-}
-
-// 创建全局实例
-window.lunarCalculator = new LunarCalculator();
+    
+    // 获取十神
+    getShiShen(dayGan, targetGan) {
+        return this.ShiShenMap[dayGan]?.[targetGan] || '未知';
+    }
+    
+    // 计算五行能量
+    calculateWuXing(bazi) {
+        const wuxing = { '木': 0, '火': 0, '土': 0, '金': 0, '水': 0 };
+        
+        // 分析天干五行
+        [...bazi.year, ...bazi.month, ...bazi.day, ...bazi.hour].forEach(char => {
+            const energy = this.WuXingEnergy[char];
+            if (energy) {
+                Object.entries(energy).forEach(([element, value]) => {
+                    wuxing[element] += value;
+                });
+            }
+        });
+        
+        return wuxing;
+    }
+    
+    // 判断日主旺衰
+    judgeStrength(bazi, wuxing) {
+        const dayGan = bazi.day.charAt(0);
+        const dayElement = this.getTianGanElement(dayGan);
+        const dayEnergy = wuxing[dayElement] || 0;
+        
+        // 简化判断：比较日主五行能量与其他五行
+        const totalEnergy = Object.values(wuxing).reduce((a, b) => a + b, 0);
+        const ratio = dayEnergy / totalEnergy;
+        
+        if (ratio > 0.3) return '身旺';
+        if (ratio < 0.2) return '身弱';
+        return '中和';
+    }
+    
+    // 获取天干五行
+    getTianGanElement(gan) {
+        const map = {
+            '甲': '木', '乙': '木', '丙': '火', '丁': '火',
+            '戊': '土', '己': '土', '庚': '金', '辛': '金', 
+            '壬': '水', '癸': '水'
+        };
+        return map[gan] || '未知';
+    }
+    
+    // 分析特殊格局
+    analyzePatterns(bazi, shishen, strength) {
+        const patterns = [];
+        
+        // 检查从格
+        if (this.isCongGe(bazi, strength)) {
+            patterns.push('从格');
+        }
+        
+        // 检查特殊十神组合
+        if (shishenCount.qisha >= 2) {
+            patterns.push('
