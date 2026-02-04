@@ -3,21 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>八字AI分析工具 - 完全免费</title>
+    <title>八字AI分析工具 - 修复版</title>
     <link rel="stylesheet" href="style.css">
-    <!-- 引入图标库 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔮</text></svg>">
 </head>
 <body>
     <div class="container">
-        <!-- 标题区域 -->
         <header class="header">
-            <h1><i class="fas fa-star-and-crescent"></i> 八字AI分析工具</h1>
-            <p class="subtitle">输入出生时间，获取专业的八字分析和AI解读</p>
+            <h1><i class="fas fa-star-and-crescent"></i> 八字AI分析工具（修复版）</h1>
+            <p class="subtitle">输入出生时间，获取准确的八字分析和AI解读</p>
         </header>
 
-        <!-- 输入区域 -->
         <div class="input-section">
             <h2><i class="fas fa-calendar-alt"></i> 请输入出生信息</h2>
             
@@ -59,7 +55,6 @@
             </button>
         </div>
 
-        <!-- 结果显示区域 -->
         <div class="result-section" id="resultSection" style="display: none;">
             <h2><i class="fas fa-chart-pie"></i> 八字分析结果</h2>
             
@@ -84,10 +79,6 @@
             
             <div class="bazi-details">
                 <div class="detail-item">
-                    <span class="detail-label">五行：</span>
-                    <span id="wuxing" class="detail-value">-</span>
-                </div>
-                <div class="detail-item">
                     <span class="detail-label">生肖：</span>
                     <span id="shengxiao" class="detail-value">-</span>
                 </div>
@@ -98,13 +89,12 @@
             </div>
         </div>
 
-        <!-- AI分析区域 -->
         <div class="ai-section">
             <h2><i class="fas fa-robot"></i> AI智能分析</h2>
             
             <div class="question-box">
-                <label for="question"><i class="fas fa-question-circle"></i> 你想问什么？（例如：事业、财运、感情）</label>
-                <textarea id="question" placeholder="请输入你想咨询的问题，比如：我的事业运如何？我应该注意什么？" rows="3"></textarea>
+                <label for="question"><i class="fas fa-question-circle"></i> 你想问什么？</label>
+                <textarea id="question" placeholder="例如：我的事业运如何？感情运势怎么样？" rows="3"></textarea>
             </div>
             
             <button id="analyzeBtn" class="btn-secondary">
@@ -113,49 +103,25 @@
             
             <div class="answer-box" id="answerBox" style="display: none;">
                 <h3><i class="fas fa-comment-dots"></i> AI分析结果</h3>
-                <div class="answer-content" id="answerContent">
-                    分析结果将显示在这里...
-                </div>
-                <div class="answer-footer">
-                    <small><i class="fas fa-info-circle"></i> 本分析基于传统八字理论和AI智能生成，仅供参考</small>
-                </div>
+                <div class="answer-content" id="answerContent">分析结果将显示在这里...</div>
             </div>
         </div>
 
-        <!-- 免责声明 -->
         <div class="disclaimer">
             <h3><i class="fas fa-exclamation-triangle"></i> 重要声明</h3>
             <p>1. 本工具仅供娱乐参考，不构成专业建议</p>
             <p>2. 命运掌握在自己手中，请理性看待分析结果</p>
             <p>3. 计算结果基于传统八字理论，不保证100%准确</p>
             <p>4. 请勿用于商业决策、医疗诊断等重要事项</p>
-        </div>
-
-        <!-- 分享按钮 -->
-        <div class="share-section">
-            <p>觉得这个工具有用？分享给朋友吧！</p>
-            <div class="share-buttons">
-                <button class="share-btn wechat" onclick="shareToWechat()">
-                    <i class="fab fa-weixin"></i> 微信
-                </button>
-                <button class="share-btn weibo" onclick="shareToWeibo()">
-                    <i class="fab fa-weibo"></i> 微博
-                </button>
-                <button class="share-btn copy" onclick="copyLink()">
-                    <i class="fas fa-link"></i> 复制链接
-                </button>
-            </div>
+            <p>5. 如需进一步交流，请联系开发者VX：linglishusheng</p>
         </div>
     </div>
 
-    <!-- 加载动画 -->
     <div id="loading" class="loading" style="display: none;">
         <div class="spinner"></div>
-        <p>AI正在思考中...</p>
+        <p>AI正在分析中...</p>
     </div>
 
-    <!-- 引入JavaScript文件 -->
-    <script src="lunar.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
