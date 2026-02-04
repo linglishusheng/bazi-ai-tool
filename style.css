@@ -5,20 +5,18 @@
 }
 
 body {
-    font-family: 'Microsoft YaHei', '微软雅黑', Arial, sans-serif;
+    font-family: 'Microsoft YaHei', Arial, sans-serif;
     line-height: 1.6;
     color: #333;
     background-color: #f5f5f5;
-    padding: 20px;
 }
 
 .container {
-    max-width: 1000px;
+    max-width: 800px;
     margin: 0 auto;
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-    padding: 30px;
+    padding: 20px;
+    background-color: white;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
 header {
@@ -28,39 +26,20 @@ header {
     border-bottom: 1px solid #eee;
 }
 
-h1 {
+header h1 {
     color: #8B4513;
-    font-size: 2.5rem;
     margin-bottom: 10px;
 }
 
-.subtitle {
-    color: #666;
-    font-size: 1.1rem;
-}
-
 .input-section {
-    margin-bottom: 30px;
-    padding: 20px;
     background-color: #f9f9f9;
-    border-radius: 8px;
+    padding: 20px;
+    border-radius: 5px;
+    margin-bottom: 30px;
 }
 
-.input-section h2 {
-    margin-bottom: 20px;
-    color: #8B4513;
-}
-
-.input-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-    margin-bottom: 20px;
-}
-
-.input-item {
-    flex: 1;
-    min-width: 150px;
+.form-group {
+    margin-bottom: 15px;
 }
 
 label {
@@ -69,22 +48,23 @@ label {
     font-weight: bold;
 }
 
-input {
+input, select {
     width: 100%;
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 4px;
-    font-size: 1rem;
+    font-size: 16px;
 }
 
 button {
     background-color: #8B4513;
     color: white;
     border: none;
-    padding: 12px 25px;
+    padding: 12px 20px;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 16px;
+    width: 100%;
     transition: background-color 0.3s;
 }
 
@@ -96,125 +76,76 @@ button:hover {
     margin-top: 30px;
 }
 
-.result-tabs {
-    display: flex;
-    border-bottom: 1px solid #ddd;
-    margin-bottom: 20px;
-}
-
-.tab-btn {
-    background: none;
-    border: none;
-    padding: 10px 20px;
-    cursor: pointer;
-    font-size: 1rem;
-    color: #666;
-    border-bottom: 3px solid transparent;
-}
-
-.tab-btn.active {
-    color: #8B4513;
-    border-bottom: 3px solid #8B4513;
-}
-
-.tab-pane {
-    display: none;
-}
-
-.tab-pane.active {
-    display: block;
-}
-
-.result-content {
+.bazi-info, .analysis-part {
+    margin-bottom: 30px;
     padding: 20px;
     background-color: #f9f9f9;
-    border-radius: 8px;
-    min-height: 400px;
-    line-height: 1.8;
-}
-
-.disclaimer {
-    background-color: #fff8e1;
-    padding: 15px;
-    border-left: 4px solid #ffc107;
-    margin-bottom: 20px;
-    border-radius: 4px;
-}
-
-.final-disclaimer {
-    margin-top: 30px;
-    padding: 15px;
-    background-color: #f0f0f0;
-    border-radius: 8px;
-    font-size: 0.9rem;
-    color: #666;
-}
-
-.important-notice {
-    margin-top: 40px;
-    padding: 20px;
-    background-color: #fff8e1;
-    border-radius: 8px;
-    border-left: 4px solid #ff9800;
-}
-
-.important-notice h3 {
-    color: #e65100;
-    margin-bottom: 15px;
-}
-
-.important-notice p {
-    margin-bottom: 10px;
-}
-
-.analysis-section {
-    margin-bottom: 25px;
-}
-
-.analysis-section h3 {
-    color: #8B4513;
-    margin-bottom: 10px;
-    padding-bottom: 5px;
-    border-bottom: 1px solid #eee;
-}
-
-.analysis-content {
-    padding-left: 15px;
-}
-
-.analysis-point {
-    margin-bottom: 15px;
-}
-
-.analysis-point strong {
-    color: #5d4037;
-}
-
-.ten-god-analysis {
-    margin-top: 10px;
-    padding: 10px;
-    background-color: #f0f0f0;
     border-radius: 5px;
 }
 
-.ten-god-item {
-    margin-bottom: 8px;
+.bazi-info h3, .analysis-part h3 {
+    color: #8B4513;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
 }
 
-@media (max-width: 768px) {
+.bazi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.bazi-item {
+    text-align: center;
+    padding: 10px;
+    background-color: #fff;
+    border-radius: 4px;
+    border: 1px solid #eee;
+}
+
+.bazi-item .title {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.analysis-content {
+    line-height: 1.8;
+}
+
+.analysis-content p {
+    margin-bottom: 15px;
+}
+
+.analysis-content h4 {
+    margin: 20px 0 10px;
+    color: #8B4513;
+}
+
+.disclaimer {
+    margin-top: 40px;
+    padding: 20px;
+    background-color: #f0f0f0;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.disclaimer h3 {
+    color: #8B4513;
+    margin-bottom: 15px;
+}
+
+.disclaimer p {
+    margin-bottom: 10px;
+}
+
+@media (max-width: 600px) {
     .container {
-        padding: 15px;
+        padding: 10px;
     }
     
-    .input-row {
-        flex-direction: column;
-    }
-    
-    .input-item {
-        min-width: 100%;
-    }
-    
-    h1 {
-        font-size: 2rem;
+    .bazi-grid {
+        grid-template-columns: repeat(2, 1fr);
     }
 }
