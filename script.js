@@ -1,5 +1,5 @@
 // =============================================
-// 手机号后四位磁场能量分析引擎
+// 四位数字磁场能量分析引擎
 // 严格依据《z数字能量参数库.txt》文档内容实现
 // 作者：网页设计程序员
 // =============================================
@@ -239,7 +239,7 @@ function analyzePhoneSuffix(suffix) {
     report += '- 避免重大投资或借贷\n';
     report += '- 注意交通安全与合同细节\n';
     report += '- 定期体检，关注对应健康领域\n';
-    report += '- 可考虑更换号码或通过风水调理化解\n';
+    report += '- 可考虑联系专业人士进一步分析\n';
   } else {
     report += '当前号码磁场较为吉祥，建议：\n';
     report += '- 把握合作与事业发展机会\n';
@@ -274,3 +274,4 @@ document.getElementById('phone-input').addEventListener('keypress', (e) => {
     document.getElementById('analyze-btn').click();
   }
 });
+
