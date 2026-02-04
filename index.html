@@ -3,105 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>八字人生规划分析工具</title>
+    <title>八字分析工具 - 传统命理与现代人生规划</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>八字人生规划分析工具</h1>
-            <p>基于传统智慧与现代人生规划的结合</p>
+            <h1>八字分析工具</h1>
+            <p class="subtitle">基于传统命理与现代人生规划的智能分析平台</p>
         </header>
 
         <div class="input-section">
-            <h2>请输入出生信息</h2>
-            <form id="birthForm">
-                <div class="form-group">
-                    <label for="year">出生年份：</label>
-                    <select id="year" required>
-                        <option value="">请选择年份</option>
-                    </select>
+            <h2>请输入八字信息</h2>
+            <div class="input-group">
+                <div class="input-row">
+                    <div class="input-item">
+                        <label for="year">年柱</label>
+                        <input type="text" id="year" placeholder="例如：甲子" maxlength="2">
+                    </div>
+                    <div class="input-item">
+                        <label for="month">月柱</label>
+                        <input type="text" id="month" placeholder="例如：乙丑" maxlength="2">
+                    </div>
+                    <div class="input-item">
+                        <label for="day">日柱</label>
+                        <input type="text" id="day" placeholder="例如：丙寅" maxlength="2">
+                    </div>
+                    <div class="input-item">
+                        <label for="hour">时柱</label>
+                        <input type="text" id="hour" placeholder="例如：丁卯" maxlength="2">
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="month">出生月份：</label>
-                    <select id="month" required>
-                        <option value="">请选择月份</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="day">出生日期：</label>
-                    <select id="day" required>
-                        <option value="">请选择日期</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="hour">出生时辰：</label>
-                    <select id="hour" required>
-                        <option value="">请选择时辰</option>
-                        <option value="0">子时 (23:00-01:00)</option>
-                        <option value="1">丑时 (01:00-03:00)</option>
-                        <option value="2">寅时 (03:00-05:00)</option>
-                        <option value="3">卯时 (05:00-07:00)</option>
-                        <option value="4">辰时 (07:00-09:00)</option>
-                        <option value="5">巳时 (09:00-11:00)</option>
-                        <option value="6">午时 (11:00-13:00)</option>
-                        <option value="7">未时 (13:00-15:00)</option>
-                        <option value="8">申时 (15:00-17:00)</option>
-                        <option value="9">酉时 (17:00-19:00)</option>
-                        <option value="10">戌时 (19:00-21:00)</option>
-                        <option value="11">亥时 (21:00-23:00)</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="gender">性别：</label>
-                    <select id="gender" required>
-                        <option value="">请选择性别</option>
-                        <option value="male">男性</option>
-                        <option value="female">女性</option>
-                    </select>
-                </div>
-                <button type="submit" id="analyzeBtn">开始分析</button>
-            </form>
+                <button id="analyze-btn">开始分析</button>
+            </div>
         </div>
 
-        <div class="disclaimer">
+        <div class="result-section" id="result-section" style="display: none;">
+            <h2>分析结果</h2>
+            
+            <div class="result-tabs">
+                <button class="tab-btn active" data-tab="traditional">传统分析方法</button>
+                <button class="tab-btn" data-tab="modern">现代人生规划解读</button>
+            </div>
+            
+            <div class="tab-content">
+                <div id="traditional" class="tab-pane active">
+                    <div class="result-content" id="traditional-result"></div>
+                </div>
+                <div id="modern" class="tab-pane">
+                    <div class="disclaimer">
+                        <p>本部分将传统分析转化为现代人生规划视角，侧重于趋势分析和建议。出生时间规律作为一种文化符号系统，提供个人发展的参考框架，而非绝对预测。以下解读基于统计模型和传统文化智慧的现代化应用，强调可能性和个体主动性。</p>
+                    </div>
+                    <div class="result-content" id="modern-result"></div>
+                </div>
+            </div>
+            
+            <div class="final-disclaimer">
+                <p>本解读基于传统文化符号系统及大量案例的统计模型进行趋势分析，仅供参考，不构成任何决策依据。请您理性看待，结合现实情况独立判断。</p>
+            </div>
+        </div>
+
+        <div class="important-notice">
             <h3>重要声明</h3>
             <p>1. 本工具仅供娱乐参考，不构成专业建议</p>
             <p>2. 命运掌握在自己手中，请理性看待分析结果</p>
             <p>3. 计算结果基于传统八字理论，不保证100%准确</p>
             <p>4. 请勿用于商业决策、医疗诊断等重要事项</p>
             <p>5. 专业大师进一步交流+VX:linglishusheng</p>
-        </div>
-
-        <div id="loading" class="loading hidden">
-            <div class="spinner"></div>
-            <p>AI正在深度分析中，请稍候...</p>
-        </div>
-
-        <div id="result" class="result-section hidden">
-            <div class="result-header">
-                <h2>分析结果</h2>
-                <button id="exportBtn" class="export-btn">导出报告</button>
-            </div>
-            
-            <div class="basic-info">
-                <h3>基本信息</h3>
-                <div id="basicInfoContent"></div>
-            </div>
-
-            <div class="analysis-section">
-                <h3>第一部分：出生时间规律的传统分析方法</h3>
-                <div id="traditionalAnalysis"></div>
-            </div>
-
-            <div class="analysis-section">
-                <h3>第二部分：现代人生规划解读</h3>
-                <div id="modernAnalysis"></div>
-            </div>
-
-            <div class="final-disclaimer">
-                <p>本解读基于传统文化符号系统及大量案例的统计模型进行趋势分析，仅供参考，不构成任何决策依据。请您理性看待，结合现实情况独立判断。</p>
-            </div>
         </div>
     </div>
 
